@@ -23,7 +23,7 @@ export default {
     },
     computed: {
         accessUrl() {
-            let host = location.host;
+            let host = 'qryrzl.natapp1.cc';
             if(/^(\d(.\d){3})|localhost/.test(host)){
                 host='<span class="text-red">正式域名</span>'
             }
