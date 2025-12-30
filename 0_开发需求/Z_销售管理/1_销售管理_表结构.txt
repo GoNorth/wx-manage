@@ -1,0 +1,24 @@
+
+-- 1. 销售员表
+CREATE TABLE `biz_sales` (
+  `sales_id` VARCHAR(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '主键ID',
+  
+  -- 业务字段开始
+  `sales_account` VARCHAR(50) NOT NULL COMMENT '销售账号',
+  `sales_name` VARCHAR(50) NOT NULL COMMENT '销售姓名',
+  `gender` VARCHAR(10) NOT NULL COMMENT '性别字典CODE：MALE-男，FEMALE-女',
+  `age` TINYINT UNSIGNED DEFAULT NULL COMMENT '年龄',
+  `phone` VARCHAR(11) NOT NULL COMMENT '手机号',
+  `address` VARCHAR(255) DEFAULT NULL COMMENT '住址',
+  -- 业务字段结束
+
+  `deleted` TINYINT UNSIGNED NOT NULL DEFAULT '0' COMMENT '逻辑删除标记字典CODE：0-NOT_DELETED未删除，1-DELETED已删除',
+  `create_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`sales_id`) USING BTREE,
+  UNIQUE KEY `uk_sales_account` (`sales_account`) USING BTREE,
+  UNIQUE KEY `uk_phone` (`phone`) USING BTREE,
+  KEY `idx_gender` (`gender`) USING BTREE,
+  KEY `idx_deleted` (`deleted`) USING BTREE,
+  KEY `idx_create_time` (`create_time`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC COMMENT='销售员表';

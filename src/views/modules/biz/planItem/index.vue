@@ -1,5 +1,65 @@
 <template>
     <div class="mod-biz-plan-item">
+        <!-- 周计划信息卡片 -->
+        <el-card class="plan-header-card" shadow="never" style="margin-bottom: 20px;">
+            <div slot="header" class="clearfix">
+                <span style="font-weight: bold; font-size: 16px;">周计划信息</span>
+            </div>
+            <el-row :gutter="20" v-loading="planHeaderLoading">
+                <el-col :span="6">
+                    <div class="info-item">
+                        <span class="info-label">计划名称：</span>
+                        <span class="info-value">{{ planHeaderInfo.planName || '-' }}</span>
+                    </div>
+                </el-col>
+                <el-col :span="6">
+                    <div class="info-item">
+                        <span class="info-label">计划类型：</span>
+                        <span class="info-value">{{ planTypeFormat(null, null, planHeaderInfo.planType) }}</span>
+                    </div>
+                </el-col>
+                <el-col :span="6">
+                    <div class="info-item">
+                        <span class="info-label">策略类型：</span>
+                        <span class="info-value">{{ strategyTypeFormat(null, null, planHeaderInfo.strategyType) }}</span>
+                    </div>
+                </el-col>
+                <el-col :span="6">
+                    <div class="info-item">
+                        <span class="info-label">状态：</span>
+                        <el-tag :type="getStatusTagType(planHeaderInfo.status)" size="small">
+                            {{ statusFormat(null, null, planHeaderInfo.status) }}
+                        </el-tag>
+                    </div>
+                </el-col>
+            </el-row>
+            <el-row :gutter="20" style="margin-top: 15px;">
+                <el-col :span="6">
+                    <div class="info-item">
+                        <span class="info-label">提交时间：</span>
+                        <span class="info-value">{{ planHeaderInfo.submittedAt || '-' }}</span>
+                    </div>
+                </el-col>
+                <el-col :span="6">
+                    <div class="info-item">
+                        <span class="info-label">执行时间：</span>
+                        <span class="info-value">{{ planHeaderInfo.executedAt || '-' }}</span>
+                    </div>
+                </el-col>
+                <el-col :span="6">
+                    <div class="info-item">
+                        <span class="info-label">交付时间：</span>
+                        <span class="info-value">{{ planHeaderInfo.deliveredAt || '-' }}</span>
+                    </div>
+                </el-col>
+                <el-col :span="6">
+                    <div class="info-item">
+                        <span class="info-label">创建时间：</span>
+                        <span class="info-value">{{ planHeaderInfo.createTime || '-' }}</span>
+                    </div>
+                </el-col>
+            </el-row>
+        </el-card>
         <el-form :inline="true" :model="dataForm" @keyup.enter.native="getDataList()">
             <el-form-item>
                 <el-input v-model="dataForm.productName" placeholder="产品名称" clearable></el-input>
@@ -84,7 +144,9 @@ export default {
             pageSize: 10,
             totalPage: 0,
             dataListLoading: false,
-            planId: ''
+            planId: '',
+            planHeaderInfo: {},
+            planHeaderLoading: false
         }
     },
     activated() {
@@ -95,9 +157,58 @@ export default {
             this.$router.go(-1)
             return
         }
+        this.getPlanHeaderInfo()
         this.getDataList()
     },
     methods: {
+        // 获取周计划信息
+        getPlanHeaderInfo() {
+            if (!this.planId) {
+                return
+            }
+            this.planHeaderLoading = true
+            const wxOpenid = this.$cookie.get('wx_openid') || ''
+            // 获取列表，然后在前端筛选匹配的planId
+            this.$http({
+                url: this.$http.adornUrl('/manage/bizPlanHeader/list'),
+                method: 'get',
+                params: this.$http.adornParams({
+                    'page': 1,
+                    'limit': 100
+                }),
+                headers: {
+                    'wx_openid': wxOpenid
+                }
+            }).then(({ data }) => {
+                if (data && data.code === 200 && data.page && data.page.list && data.page.list.length > 0) {
+                    // 从列表中查找匹配的planId
+                    const plan = data.page.list.find(item => item.planId === this.planId)
+                    if (plan) {
+                        this.planHeaderInfo = plan
+                    } else {
+                        // 如果找不到，使用路由参数中的planName
+                        this.planHeaderInfo = {
+                            planId: this.planId,
+                            planName: this.$route.query.planName || ''
+                        }
+                    }
+                } else {
+                    // 如果API返回空，使用路由参数
+                    this.planHeaderInfo = {
+                        planId: this.planId,
+                        planName: this.$route.query.planName || ''
+                    }
+                }
+                this.planHeaderLoading = false
+            }).catch(() => {
+                // 如果API调用失败，使用路由参数
+                this.planHeaderInfo = {
+                    planId: this.planId,
+                    planName: this.$route.query.planName || ''
+                }
+                this.planHeaderLoading = false
+            })
+        },
         // 获取数据列表
         getDataList() {
             if (!this.planId) {
@@ -171,8 +282,52 @@ export default {
                 2: '已执行'
             }
             return statusMap[cellValue] !== undefined ? statusMap[cellValue] : '未知'
+        },
+        // 计划类型格式化
+        planTypeFormat(row, column, cellValue) {
+            if (cellValue === null || cellValue === undefined) return '-'
+            const typeMap = {
+                1: '私域复购',
+                2: '公域获客'
+            }
+            return typeMap[cellValue] || '未知'
+        },
+        // 策略类型格式化
+        strategyTypeFormat(row, column, cellValue) {
+            if (cellValue === null || cellValue === undefined) return '-'
+            const typeMap = {
+                1: '私域复购',
+                2: '公域获客'
+            }
+            return typeMap[cellValue] || '未知'
+        },
+        // 获取状态标签类型
+        getStatusTagType(status) {
+            const typeMap = {
+                0: 'info',
+                1: 'warning',
+                2: 'success'
+            }
+            return typeMap[status] || ''
         }
     }
 }
 </script>
+
+<style lang="scss" scoped>
+.plan-header-card {
+    .info-item {
+        margin-bottom: 10px;
+        .info-label {
+            color: #606266;
+            font-size: 14px;
+        }
+        .info-value {
+            color: #303133;
+            font-size: 14px;
+            font-weight: 500;
+        }
+    }
+}
+</style>
 

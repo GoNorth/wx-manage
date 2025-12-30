@@ -1,0 +1,81 @@
+通过 wx_openid 来实现其店铺的加载，暂定wx_openid下只有1个store记录.
+
+request的请求URL：
+http://127.0.0.1:8088/wx/manage/bizSales/list
+header的key，举例如下：
+token:48a3e9d85ce2574bc5665b224b60b26e
+wx_openid：ojr3J5qmbAewPAgYeOJtRohMji_Q
+
+response的示例结果：
+{
+    "msg": "success",
+    "code": 200,
+    "page": {
+        "totalCount": 5,
+        "pageSize": 10,
+        "totalPage": 1,
+        "currPage": 1,
+        "list": [
+            {
+                "salesId": "SALES_001",
+                "salesAccount": "sales001",
+                "salesName": "张伟",
+                "gender": "MALE",
+                "age": 28,
+                "phone": "13800138001",
+                "address": "北京市朝阳区建国路88号",
+                "deleted": 0,
+                "createTime": "2025-12-30 07:20",
+                "updateTime": "2025-12-30 07:20"
+            },
+            {
+                "salesId": "SALES_002",
+                "salesAccount": "sales002",
+                "salesName": "李娜",
+                "gender": "FEMALE",
+                "age": 25,
+                "phone": "13800138002",
+                "address": "上海市浦东新区世纪大道100号",
+                "deleted": 0,
+                "createTime": "2025-12-30 07:20",
+                "updateTime": "2025-12-30 07:20"
+            },
+            {
+                "salesId": "SALES_003",
+                "salesAccount": "sales003",
+                "salesName": "王强",
+                "gender": "MALE",
+                "age": 32,
+                "phone": "13800138003",
+                "address": "广州市天河区天河路123号",
+                "deleted": 0,
+                "createTime": "2025-12-30 07:20",
+                "updateTime": "2025-12-30 07:20"
+            },
+            {
+                "salesId": "SALES_004",
+                "salesAccount": "sales004",
+                "salesName": "陈静",
+                "gender": "FEMALE",
+                "age": 29,
+                "phone": "13800138004",
+                "address": "深圳市南山区科技园南路2000号",
+                "deleted": 0,
+                "createTime": "2025-12-30 07:20",
+                "updateTime": "2025-12-30 07:20"
+            },
+            {
+                "salesId": "SALES_005",
+                "salesAccount": "sales005",
+                "salesName": "刘明",
+                "gender": "MALE",
+                "age": 35,
+                "phone": "13800138005",
+                "address": "杭州市西湖区文三路259号",
+                "deleted": 0,
+                "createTime": "2025-12-30 07:20",
+                "updateTime": "2025-12-30 07:20"
+            }
+        ]
+    }
+}
