@@ -1,0 +1,38 @@
+通过 wx_openid 来实现其店铺的加载，暂定wx_openid下只有1个store记录.
+
+request的请求URL：
+http://localhost:8088/wx/manage/bizStore/list
+header的key，如下：
+token:48a3e9d85ce2574bc5665b224b60b26e
+wx_openid：ojr3J5qmbAewPAgYeOJtRohMji_Q
+
+response的示例结果：
+{
+    "msg": "success",
+    "code": 200,
+    "page": {
+        "totalCount": 1,
+        "pageSize": 10,
+        "totalPage": 1,
+        "currPage": 1,
+        "list": [
+            {
+                "storeId": "STORE_001",
+                "ownerOpenid": "ojr3J5qmbAewPAgYeOJtRohMji_Q",
+                "ownerName": "张三",
+                "ownerPhone": "13800138000",
+                "storeName": "测试餐厅",
+                "cateringType": "CHINESE",
+                "storeAddress": "北京市朝阳区测试街道123号",
+                "longitude": 116.4075260,
+                "latitude": 39.9040300,
+                "customerGroup": "OFFICE_WORKER",
+                "auditStatus": 1,
+                "auditRemark": null,
+                "deleted": 0,
+                "createTime": "2025-12-27 10:26",
+                "updateTime": "2025-12-30 09:36"
+            }
+        ]
+    }
+}
