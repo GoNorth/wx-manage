@@ -95,6 +95,65 @@
             </el-table-column>
             <el-table-column prop="productName" header-align="center" align="center" label="产品名称" :show-overflow-tooltip="true">
             </el-table-column>
+            <el-table-column prop="rsThumbnailUrl" header-align="center" align="center" label="图片" width="120">
+                <template slot-scope="scope">
+                    <div v-if="scope.row.rsThumbnailUrl" class="image-cell">
+                        <!-- 视频类型 (content_type === 2) -->
+                        <div
+                            v-if="scope.row.rsFileUrl && (scope.row.contentType === 2 || scope.row.content_type === 2)"
+                            class="video-thumbnail-wrapper"
+                            @click.stop="openVideoDialog(scope.row.rsFileUrl)"
+                        >
+                            <el-popover
+                                placement="right"
+                                trigger="hover"
+                                :open-delay="300"
+                                width="500"
+                            >
+                                <video
+                                    :src="scope.row.rsFileUrl"
+                                    controls
+                                    style="max-width: 500px; max-height: 500px;"
+                                    @click.stop
+                                ></video>
+                                <div slot="reference" class="video-thumbnail-container">
+                                    <el-image
+                                        :src="scope.row.rsThumbnailUrl"
+                                        fit="cover"
+                                        style="width: 80px; height: 80px; cursor: pointer;"
+                                        class="thumbnail-image"
+                                    >
+                                    </el-image>
+                                </div>
+                            </el-popover>
+                        </div>
+                        <!-- 图片类型 (content_type === 1) 或者没有contentType但有rsFileUrl时默认当作图片 -->
+                        <div
+                            v-else-if="scope.row.rsFileUrl"
+                            class="image-click-wrapper"
+                            @click.stop="openImageDialog(scope.row.rsFileUrl)"
+                        >
+                            <el-image
+                                :src="scope.row.rsThumbnailUrl"
+                                fit="cover"
+                                style="width: 80px; height: 80px; cursor: pointer;"
+                                class="thumbnail-image"
+                            >
+                            </el-image>
+                        </div>
+                        <!-- 只有缩略图，没有文件URL -->
+                        <el-image
+                            v-else
+                            :src="scope.row.rsThumbnailUrl"
+                            fit="cover"
+                            style="width: 80px; height: 80px;"
+                            class="thumbnail-image"
+                        >
+                        </el-image>
+                    </div>
+                    <span v-else>-</span>
+                </template>
+            </el-table-column>
             <el-table-column prop="originalPrice" header-align="center" align="center" label="原价" width="100">
                 <template slot-scope="scope">
                     <span v-if="scope.row.originalPrice">{{ scope.row.originalPrice.toFixed(2) }}</span>
@@ -127,6 +186,37 @@
             :total="totalPage"
             layout="total, sizes, prev, pager, next, jumper">
         </el-pagination>
+        <!-- 图片预览对话框 -->
+        <el-dialog
+            title="图片预览"
+            :visible.sync="imageDialogVisible"
+            :width="dialogWidth"
+            :close-on-click-modal="true"
+            custom-class="image-preview-dialog"
+        >
+            <div class="image-preview-container">
+                <img
+                    v-if="currentImageUrl"
+                    :src="currentImageUrl"
+                    class="preview-image"
+                    alt="预览图片"
+                />
+            </div>
+        </el-dialog>
+        <!-- 视频预览对话框 -->
+        <el-dialog
+            title="视频预览"
+            :visible.sync="videoDialogVisible"
+            width="800px"
+            :close-on-click-modal="true"
+        >
+            <video
+                v-if="currentVideoUrl"
+                :src="currentVideoUrl"
+                controls
+                style="width: 100%; max-height: 600px; display: block; margin: 0 auto;"
+            ></video>
+        </el-dialog>
     </div>
 </template>
 
@@ -147,7 +237,19 @@ export default {
             planId: '',
             storeId: '',
             planHeaderInfo: {},
-            planHeaderLoading: false
+            planHeaderLoading: false,
+            imageDialogVisible: false,
+            currentImageUrl: '',
+            videoDialogVisible: false,
+            currentVideoUrl: ''
+        }
+    },
+    computed: {
+        // 根据9:16比例计算对话框宽度
+        dialogWidth() {
+            // 9:16比例，如果最大高度是90vh，宽度应该是 90vh * 9/16 = 50.625vh
+            // 使用vh单位，让宽度随视口高度变化
+            return '50.625vh'
         }
     },
     activated() {
@@ -320,6 +422,26 @@ export default {
                 2: 'success'
             }
             return typeMap[status] || ''
+        },
+        // 打开图片预览对话框
+        openImageDialog(imageUrl) {
+            console.log('openImageDialog called with:', imageUrl)
+            if (!imageUrl) {
+                this.$message.warning('图片地址不存在')
+                return
+            }
+            this.currentImageUrl = imageUrl
+            this.imageDialogVisible = true
+        },
+        // 打开视频预览对话框
+        openVideoDialog(videoUrl) {
+            console.log('openVideoDialog called with:', videoUrl)
+            if (!videoUrl) {
+                this.$message.warning('视频地址不存在')
+                return
+            }
+            this.currentVideoUrl = videoUrl
+            this.videoDialogVisible = true
         }
     }
 }
@@ -338,6 +460,75 @@ export default {
             font-size: 14px;
             font-weight: 500;
         }
+    }
+}
+.image-cell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    .thumbnail-image {
+        border-radius: 4px;
+        transition: transform 0.3s;
+        &:hover {
+            transform: scale(1.1);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+        }
+    }
+    .image-click-wrapper {
+        cursor: pointer;
+        display: inline-block;
+    }
+    .video-thumbnail-wrapper {
+        position: relative;
+        display: inline-block;
+        .video-thumbnail-container {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+    }
+}
+.image-preview-container {
+    display: block;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    aspect-ratio: 9 / 16;
+    position: relative;
+    .preview-image {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        display: block;
+        margin: 0;
+    }
+}
+::v-deep .image-preview-dialog {
+    .el-dialog {
+        margin: 0 auto !important;
+        margin-top: 10px !important;
+        display: flex;
+        flex-direction: column;
+        aspect-ratio: 9 / 16;
+        max-height: calc(100vh - 20px);
+    }
+    .el-dialog__body {
+        padding: 0 !important;
+        margin: 0;
+        width: 100%;
+        flex: 1;
+        overflow: hidden;
+        aspect-ratio: 9 / 16;
+    }
+    .el-dialog__header {
+        padding: 10px 20px;
+        margin: 0;
+        flex-shrink: 0;
+    }
+    .el-dialog__headerbtn {
+        top: 10px;
+        right: 20px;
     }
 }
 </style>
