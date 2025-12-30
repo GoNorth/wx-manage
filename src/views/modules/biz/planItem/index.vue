@@ -176,6 +176,12 @@
             </el-table-column>
             <el-table-column prop="deliveredAt" header-align="center" align="center" label="交付时间" width="160">
             </el-table-column>
+            <el-table-column prop="feedbackId" header-align="center" align="center" label="反馈" width="100">
+                <template slot-scope="scope">
+                    <el-link v-if="scope.row.feedbackId" type="primary" @click="viewFeedback(scope.row.feedbackId)">查看</el-link>
+                    <span v-else>-</span>
+                </template>
+            </el-table-column>
         </el-table>
         <el-pagination
             @size-change="sizeChangeHandle"
@@ -483,6 +489,20 @@ export default {
         // 处理视频加载成功
         handleVideoLoaded(e) {
             console.log('视频加载成功:', e.target.duration, '秒')
+        },
+        // 查看反馈
+        viewFeedback(feedbackId) {
+            if (!feedbackId) {
+                this.$message.warning('反馈ID不存在')
+                return
+            }
+            // 跳转到反馈管理页面，并传递feedbackId作为查询参数
+            this.$router.push({
+                name: 'manage-bizContentFeedback',
+                query: {
+                    feedbackId: feedbackId
+                }
+            })
         }
     }
 }

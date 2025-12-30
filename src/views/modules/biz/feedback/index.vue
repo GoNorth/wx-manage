@@ -20,7 +20,7 @@
                 <el-button @click="getDataList()">查询</el-button>
             </el-form-item>
         </el-form>
-        <el-table :data="dataList" border v-loading="dataListLoading" style="width: 100%;">
+        <el-table :data="dataList" border v-loading="dataListLoading" :row-class-name="tableRowClassName" style="width: 100%;">
             <el-table-column prop="feedbackId" header-align="center" align="center" label="反馈ID" width="150">
             </el-table-column>
             <el-table-column prop="contentId" header-align="center" align="center" label="内容ID" width="150">
@@ -42,6 +42,7 @@
             <el-table-column fixed="right" header-align="center" align="center" width="120" label="操作">
                 <template slot-scope="scope">
                     <el-button v-if="scope.row.status === 0" type="text" size="small" @click="handleFeedback(scope.row)">处理</el-button>
+                    <span v-else>-</span>
                 </template>
             </el-table-column>
         </el-table>
@@ -88,7 +89,8 @@ export default {
             dataForm: {
                 feedbackType: '',
                 status: '',
-                feedbackDesc: ''
+                feedbackDesc: '',
+                feedbackId: ''
             },
             dataList: [],
             pageIndex: 1,
@@ -113,6 +115,12 @@ export default {
         }
     },
     activated() {
+        // 从路由查询参数获取feedbackId
+        const feedbackId = this.$route.query.feedbackId
+        if (feedbackId) {
+            // 如果有feedbackId，设置到查询表单中
+            this.dataForm.feedbackId = feedbackId
+        }
         this.getDataList()
     },
     methods: {
@@ -129,7 +137,8 @@ export default {
                     'limit': this.pageSize,
                     'feedbackType': this.dataForm.feedbackType,
                     'status': this.dataForm.status !== '' ? this.dataForm.status : null,
-                    'feedbackDesc': this.dataForm.feedbackDesc
+                    'feedbackDesc': this.dataForm.feedbackDesc,
+                    'feedbackId': this.dataForm.feedbackId || null
                 }),
                 headers: {
                     'wx_openid': wxOpenid
@@ -171,6 +180,13 @@ export default {
                 1: '已处理'
             }
             return statusMap[cellValue] !== undefined ? statusMap[cellValue] : '未知'
+        },
+        // 表格行类名
+        tableRowClassName({ row, rowIndex }) {
+            if (row.feedbackId) {
+                return 'highlight-row'
+            }
+            return ''
         },
         // 处理反馈
         handleFeedback(row) {
@@ -270,4 +286,13 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+.mod-biz-feedback ::v-deep .el-table .highlight-row {
+    background-color: #fffbe6;
+}
+.mod-biz-feedback ::v-deep .el-table .highlight-row:hover > td {
+    background-color: #fffbe6 !important;
+}
+</style>
 
