@@ -34,6 +34,31 @@
             </el-table-column>
             <el-table-column prop="address" header-align="center" align="center" label="住址" :show-overflow-tooltip="true">
             </el-table-column>
+            <el-table-column header-align="center" align="center" label="二维码" width="100">
+                <template slot-scope="scope">
+                    <el-popover
+                        v-if="scope.row.qrcodeUrl"
+                        placement="right"
+                        trigger="hover"
+                        :open-delay="300"
+                        width="300"
+                    >
+                        <el-image
+                            :src="scope.row.qrcodeUrl"
+                            fit="contain"
+                            style="max-width: 300px; max-height: 300px;"
+                            :preview-src-list="[scope.row.qrcodeUrl]"
+                        >
+                            <div slot="error" class="image-slot">
+                                <i class="el-icon-picture-outline"></i>
+                                <p>图片加载失败</p>
+                            </div>
+                        </el-image>
+                        <span slot="reference" style="color: #409EFF; cursor: pointer;">二维码</span>
+                    </el-popover>
+                    <span v-else>-</span>
+                </template>
+            </el-table-column>
             <el-table-column header-align="center" align="center" label="门店" width="100">
                 <template slot-scope="scope">
                     <el-button type="text" size="small" @click="viewStores(scope.row.salesId)">查看门店</el-button>

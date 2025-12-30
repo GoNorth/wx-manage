@@ -22,6 +22,9 @@
             <el-form-item label="住址" prop="address">
                 <el-input v-model="dataForm.address" placeholder="住址" type="textarea" :rows="3"></el-input>
             </el-form-item>
+            <el-form-item label="二维码URL" prop="qrcodeUrl">
+                <el-input v-model="dataForm.qrcodeUrl" placeholder="二维码在线地址URL"></el-input>
+            </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">
             <el-button @click="visible = false">取消</el-button>
@@ -42,7 +45,8 @@ export default {
                 gender: 'MALE',
                 age: null,
                 phone: '',
-                address: ''
+                address: '',
+                qrcodeUrl: ''
             },
             dataRule: {
                 salesAccount: [
@@ -62,6 +66,9 @@ export default {
                 ],
                 address: [
                     { max: 255, message: '住址长度不能超过255个字符', trigger: 'blur' }
+                ],
+                qrcodeUrl: [
+                    { max: 500, message: '二维码URL长度不能超过500个字符', trigger: 'blur' }
                 ]
             }
         }
@@ -102,7 +109,8 @@ export default {
                     gender: 'MALE',
                     age: null,
                     phone: '',
-                    address: ''
+                    address: '',
+                    qrcodeUrl: ''
                 }
             }
         },

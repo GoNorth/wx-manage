@@ -10,6 +10,7 @@ CREATE TABLE `biz_sales` (
   `age` TINYINT UNSIGNED DEFAULT NULL COMMENT '年龄',
   `phone` VARCHAR(11) NOT NULL COMMENT '手机号',
   `address` VARCHAR(255) DEFAULT NULL COMMENT '住址',
+  `qrcode_url` VARCHAR(500) DEFAULT NULL COMMENT '二维码在线地址URL',
   -- 业务字段结束
 
   `deleted` TINYINT UNSIGNED NOT NULL DEFAULT '0' COMMENT '逻辑删除标记字典CODE：0-NOT_DELETED未删除，1-DELETED已删除',
@@ -22,3 +23,6 @@ CREATE TABLE `biz_sales` (
   KEY `idx_deleted` (`deleted`) USING BTREE,
   KEY `idx_create_time` (`create_time`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC COMMENT='销售员表';
+
+-- 2. 添加二维码URL字段（如果表已存在）
+ALTER TABLE `biz_sales` ADD COLUMN `qrcode_url` VARCHAR(500) DEFAULT NULL COMMENT '二维码在线地址URL' AFTER `address`;
