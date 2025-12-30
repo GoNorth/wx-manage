@@ -190,7 +190,7 @@
         <el-dialog
             title="图片预览"
             :visible.sync="imageDialogVisible"
-            :width="dialogWidth"
+            :width="imageDialogWidth"
             :close-on-click-modal="true"
             custom-class="image-preview-dialog"
         >
@@ -207,15 +207,27 @@
         <el-dialog
             title="视频预览"
             :visible.sync="videoDialogVisible"
-            width="800px"
+            :width="videoDialogWidth"
             :close-on-click-modal="true"
+            custom-class="video-preview-dialog"
         >
-            <video
-                v-if="currentVideoUrl"
-                :src="currentVideoUrl"
-                controls
-                style="width: 100%; max-height: 600px; display: block; margin: 0 auto;"
-            ></video>
+            <div class="video-preview-container">
+                <video
+                    v-if="currentVideoUrl"
+                    :key="currentVideoUrl"
+                    :src="currentVideoUrl"
+                    controls
+                    preload="auto"
+                    playsinline
+                    webkit-playsinline
+                    x5-playsinline
+                    class="preview-video"
+                    @error="handleVideoError"
+                    @loadedmetadata="handleVideoLoaded"
+                >
+                    您的浏览器不支持视频播放。
+                </video>
+            </div>
         </el-dialog>
     </div>
 </template>
@@ -245,10 +257,14 @@ export default {
         }
     },
     computed: {
-        // 根据9:16比例计算对话框宽度
-        dialogWidth() {
+        // 图片对话框宽度：根据9:16比例计算
+        imageDialogWidth() {
             // 9:16比例，如果最大高度是90vh，宽度应该是 90vh * 9/16 = 50.625vh
-            // 使用vh单位，让宽度随视口高度变化
+            return '50.625vh'
+        },
+        // 视频对话框宽度：根据9:16比例计算
+        videoDialogWidth() {
+            // 视频也使用9:16比例
             return '50.625vh'
         }
     },
@@ -440,8 +456,33 @@ export default {
                 this.$message.warning('视频地址不存在')
                 return
             }
-            this.currentVideoUrl = videoUrl
-            this.videoDialogVisible = true
+            // 先关闭对话框（如果已打开），然后重新打开，确保视频重新加载
+            if (this.videoDialogVisible) {
+                this.videoDialogVisible = false
+                this.$nextTick(() => {
+                    this.currentVideoUrl = videoUrl
+                    this.videoDialogVisible = true
+                })
+            } else {
+                this.currentVideoUrl = videoUrl
+                this.videoDialogVisible = true
+            }
+        },
+        // 处理视频加载错误
+        handleVideoError(e) {
+            console.error('视频加载失败:', e)
+            const video = e.target
+            console.error('视频错误详情:', {
+                error: video.error,
+                networkState: video.networkState,
+                readyState: video.readyState,
+                src: video.src
+            })
+            this.$message.error('视频加载失败，请检查视频地址是否正确或视频格式是否支持')
+        },
+        // 处理视频加载成功
+        handleVideoLoaded(e) {
+            console.log('视频加载成功:', e.target.duration, '秒')
         }
     }
 }
@@ -505,6 +546,48 @@ export default {
     }
 }
 ::v-deep .image-preview-dialog {
+    .el-dialog {
+        margin: 0 auto !important;
+        margin-top: 10px !important;
+        display: flex;
+        flex-direction: column;
+        aspect-ratio: 9 / 16;
+        max-height: calc(100vh - 20px);
+    }
+    .el-dialog__body {
+        padding: 0 !important;
+        margin: 0;
+        width: 100%;
+        flex: 1;
+        overflow: hidden;
+        aspect-ratio: 9 / 16;
+    }
+    .el-dialog__header {
+        padding: 10px 20px;
+        margin: 0;
+        flex-shrink: 0;
+    }
+    .el-dialog__headerbtn {
+        top: 10px;
+        right: 20px;
+    }
+}
+.video-preview-container {
+    display: block;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    aspect-ratio: 9 / 16;
+    position: relative;
+    .preview-video {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        display: block;
+        margin: 0;
+    }
+}
+::v-deep .video-preview-dialog {
     .el-dialog {
         margin: 0 auto !important;
         margin-top: 10px !important;
