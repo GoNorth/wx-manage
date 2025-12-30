@@ -1,0 +1,49 @@
+通过 wx_openid 来实现其店铺的加载，暂定wx_openid下只有1个store记录.
+
+request的请求URL：
+http://127.0.0.1:8088/wx/manage/bizPlanHeader/list?page=1&limit=10
+header的key，举例如下：
+token:48a3e9d85ce2574bc5665b224b60b26e
+wx_openid：ojr3J5qmbAewPAgYeOJtRohMji_Q
+
+response的示例结果：
+{
+    "msg": "success",
+    "code": 200,
+    "page": {
+        "totalCount": 2,
+        "pageSize": 10,
+        "totalPage": 1,
+        "currPage": 1,
+        "list": [
+            {
+                "planId": "PLAN_PUBLIC_001",
+                "storeId": "STORE_001",
+                "planType": 2,
+                "strategyType": 2,
+                "planName": "2025年12月第4周公域获客计划",
+                "status": 2,
+                "submittedAt": "2025-12-20 10:00",
+                "executedAt": "2025-12-21 10:00",
+                "deliveredAt": "2025-12-22 10:00",
+                "deleted": 0,
+                "createTime": "2025-12-27 10:26",
+                "updateTime": "2025-12-27 10:26"
+            },
+            {
+                "planId": "PLAN_PRIVATE_001",
+                "storeId": "STORE_001",
+                "planType": 1,
+                "strategyType": 1,
+                "planName": "2025年12月私域复购计划",
+                "status": 2,
+                "submittedAt": "2025-12-20 10:00",
+                "executedAt": "2025-12-21 10:00",
+                "deliveredAt": "2025-12-22 10:00",
+                "deleted": 0,
+                "createTime": "2025-12-27 10:26",
+                "updateTime": "2025-12-27 10:26"
+            }
+        ]
+    }
+}

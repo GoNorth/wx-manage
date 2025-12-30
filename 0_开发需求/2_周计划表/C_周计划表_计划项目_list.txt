@@ -1,0 +1,93 @@
+通过 wx_openid 来实现其店铺的加载，暂定wx_openid下只有1个store记录.
+
+从[B_周计划表_周头部.txt]的编辑进入到项目的列表中的时候，这个参数是要添加的。
+"planId": "PLAN_PUBLIC_001",
+
+request的请求URL：
+http://127.0.0.1:8088/wx/manage/bizPlanItem/list?page=1&limit=10&planId=PLAN_PUBLIC_001
+header的key，举例如下：
+token:48a3e9d85ce2574bc5665b224b60b26e
+wx_openid：ojr3J5qmbAewPAgYeOJtRohMji_Q
+
+response的示例结果：
+{
+    "msg": "success",
+    "code": 200,
+    "page": {
+        "totalCount": 3,
+        "pageSize": 10,
+        "totalPage": 1,
+        "currPage": 1,
+        "list": [
+            {
+                "itemId": "ITEM_PUBLIC_003",
+                "planId": "PLAN_PUBLIC_001",
+                "strategyType": 2,
+                "dateKey": "WEEK5",
+                "timeSlot": "ALL",
+                "marketingTheme": "MEMBER",
+                "platform": "XIAOHONGSHU",
+                "platformDesc": "小红书",
+                "contentTag": "STOREVISIT",
+                "contentTagDesc": "到店",
+                "productName": "促销信息输入测试333",
+                "originalPrice": null,
+                "discountPrice": null,
+                "activityDetails": "邀请达人发布探店笔记,带话题",
+                "status": 0,
+                "submittedAt": "2025-12-20 10:00",
+                "executedAt": "2025-12-21 10:00",
+                "deliveredAt": "2025-12-22 10:00",
+                "deleted": 0,
+                "createTime": "2025-12-27 10:26",
+                "updateTime": "2025-12-30 11:01"
+            },
+            {
+                "itemId": "ITEM_PUBLIC_002",
+                "planId": "PLAN_PUBLIC_001",
+                "strategyType": 2,
+                "dateKey": "WEEK5",
+                "timeSlot": null,
+                "marketingTheme": null,
+                "platform": "MEITUAN",
+                "platformDesc": "美团",
+                "contentTag": "GROUPBUY",
+                "contentTagDesc": "团购",
+                "productName": "双人优惠套餐",
+                "originalPrice": 88.00,
+                "discountPrice": 68.00,
+                "activityDetails": "原价88元,团购价68元,含2份主食",
+                "status": 2,
+                "submittedAt": "2025-12-20 10:00",
+                "executedAt": "2025-12-21 10:00",
+                "deliveredAt": "2025-12-22 10:00",
+                "deleted": 0,
+                "createTime": "2025-12-27 10:26",
+                "updateTime": "2025-12-30 02:16"
+            },
+            {
+                "itemId": "ITEM_PUBLIC_001",
+                "planId": "PLAN_PUBLIC_001",
+                "strategyType": 2,
+                "dateKey": "WEEK5",
+                "timeSlot": null,
+                "marketingTheme": null,
+                "platform": "DOUYIN",
+                "platformDesc": "抖音",
+                "contentTag": "SHORTVIDEO",
+                "contentTagDesc": "短视频",
+                "productName": "招牌牛肉面",
+                "originalPrice": null,
+                "discountPrice": null,
+                "activityDetails": "展示制作过程,带门店定位",
+                "status": 2,
+                "submittedAt": "2025-12-20 10:00",
+                "executedAt": "2025-12-21 10:00",
+                "deliveredAt": "2025-12-22 10:00",
+                "deleted": 0,
+                "createTime": "2025-12-27 10:26",
+                "updateTime": "2025-12-30 02:16"
+            }
+        ]
+    }
+}

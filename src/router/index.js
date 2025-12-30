@@ -140,6 +140,18 @@ function fnAddDynamicMenuRoutes(menuList = [], routes = []) {
   } else {
     mainRoutes.name = 'main-dynamic'
     mainRoutes.children = routes
+    // 手动添加 planItem 路由（不在菜单中的页面）
+    mainRoutes.children.push({
+      path: '/biz-planItem',
+      component: () => import('@/views/modules/biz/planItem/index.vue'),
+      name: 'biz-planItem',
+      meta: {
+        title: '计划项目列表',
+        isDynamic: false,
+        isTab: true,
+        iframeUrl: ''
+      }
+    })
     router.addRoutes([
       mainRoutes,
       { path: '*', redirect: { name: '404' } }
