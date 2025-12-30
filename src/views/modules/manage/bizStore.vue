@@ -16,6 +16,11 @@
             </el-table-column>
             <el-table-column prop="ownerPhone" header-align="center" align="center" label="联系电话">
             </el-table-column>
+            <el-table-column header-align="center" align="center" label="销售" width="120">
+                <template slot-scope="scope">
+                    <span>{{ scope.row.salesId || scope.row.sales_id || '-' }}</span>
+                </template>
+            </el-table-column>
             <el-table-column prop="cateringType" header-align="center" align="center" label="餐饮类型" :formatter="cateringTypeFormat">
             </el-table-column>
             <el-table-column prop="storeAddress" header-align="center" align="center" label="店铺地址" :show-overflow-tooltip="true">
@@ -23,6 +28,11 @@
             <el-table-column prop="customerGroup" header-align="center" align="center" label="客户群体" :formatter="customerGroupFormat">
             </el-table-column>
             <el-table-column prop="auditStatus" header-align="center" align="center" label="审核状态" :formatter="auditStatusFormat">
+            </el-table-column>
+            <el-table-column header-align="center" align="center" label="周计划" width="100">
+                <template slot-scope="scope">
+                    <el-button type="text" size="small" @click="goToPlanItem(scope.row)">查看</el-button>
+                </template>
             </el-table-column>
             <el-table-column prop="createTime" header-align="center" align="center" label="创建时间">
             </el-table-column>
@@ -43,7 +53,8 @@ export default {
     data() {
         return {
             dataForm: {
-                storeName: ''
+                storeName: '',
+                salesId: ''
             },
             dataList: [],
             dataListLoading: false,
@@ -54,6 +65,10 @@ export default {
         AddOrUpdate
     },
     activated() {
+        // 从路由参数中获取salesId
+        if (this.$route.query.salesId) {
+            this.dataForm.salesId = this.$route.query.salesId
+        }
         this.getDataList()
     },
     methods: {
@@ -66,7 +81,8 @@ export default {
                 url: this.$http.adornUrl('/manage/bizStore/list'),
                 method: 'get',
                 params: this.$http.adornParams({
-                    'storeName': this.dataForm.storeName
+                    'storeName': this.dataForm.storeName,
+                    'salesId': this.dataForm.salesId
                 }),
                 headers: {
                     'wx_openid': wxOpenid
@@ -120,6 +136,20 @@ export default {
                 2: '已拒绝'
             }
             return statusMap[cellValue] !== undefined ? statusMap[cellValue] : '未知'
+        },
+        // 跳转到周计划表页面
+        goToPlanItem(row) {
+            const storeId = row.storeId || row.store_id
+            if (!storeId) {
+                this.$message.warning('店铺ID不存在')
+                return
+            }
+            this.$router.push({
+                name: 'manage-bizPlanHeader',
+                query: {
+                    storeId: storeId
+                }
+            })
         }
     }
 }

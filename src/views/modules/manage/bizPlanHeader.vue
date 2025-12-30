@@ -22,6 +22,11 @@
             </el-form-item>
         </el-form>
         <el-table :data="dataList" border v-loading="dataListLoading" style="width: 100%;">
+            <el-table-column header-align="center" align="center" label="门店" width="120">
+                <template slot-scope="scope">
+                    <span>{{ scope.row.storeId || scope.row.store_id || '-' }}</span>
+                </template>
+            </el-table-column>
             <el-table-column prop="planName" header-align="center" align="center" label="计划名称" :show-overflow-tooltip="true">
             </el-table-column>
             <el-table-column prop="planType" header-align="center" align="center" label="计划类型" :formatter="planTypeFormat" width="120">
@@ -69,10 +74,13 @@ export default {
             pageIndex: 1,
             pageSize: 10,
             totalPage: 0,
-            dataListLoading: false
+            dataListLoading: false,
+            storeId: ''
         }
     },
     activated() {
+        // 从路由参数获取storeId
+        this.storeId = this.$route.query.storeId || ''
         this.getDataList()
     },
     methods: {
@@ -80,16 +88,21 @@ export default {
         getDataList() {
             this.dataListLoading = true
             const wxOpenid = this.$cookie.get('wx_openid') || ''
+            const params = {
+                'page': this.pageIndex,
+                'limit': this.pageSize,
+                'planName': this.dataForm.planName,
+                'planType': this.dataForm.planType,
+                'status': this.dataForm.status
+            }
+            // 如果提供了storeId，添加到查询参数中
+            if (this.storeId) {
+                params.storeId = this.storeId
+            }
             this.$http({
                 url: this.$http.adornUrl('/manage/bizPlanHeader/list'),
                 method: 'get',
-                params: this.$http.adornParams({
-                    'page': this.pageIndex,
-                    'limit': this.pageSize,
-                    'planName': this.dataForm.planName,
-                    'planType': this.dataForm.planType,
-                    'status': this.dataForm.status
-                }),
+                params: this.$http.adornParams(params),
                 headers: {
                     'wx_openid': wxOpenid
                 }

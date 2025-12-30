@@ -1,0 +1,46 @@
+通过 wx_openid 来进行数据的隔离。
+
+request的请求URL：
+http://127.0.0.1:8088/wx/manage/bizContentFeedback/list
+
+header的key，举例如下：
+token:d5f18318c1f835aa8d29d35bffb32aff
+wx_openid：ojr3J5qmbAewPAgYeOJtRohMji_Q
+
+response的示例结果：
+{
+    "msg": "success",
+    "code": 200,
+    "page": {
+        "totalCount": 2,
+        "pageSize": 10,
+        "totalPage": 1,
+        "currPage": 1,
+        "list": [
+            {
+                "feedbackId": "FEEDBACK_002",
+                "contentId": "CONTENT_IMG_002",
+                "feedbackType": "PRODUCT",
+                "feedbackDesc": "产品信息有误",
+                "userOpenid": "ojr3J5qmbAewPAgYeOJtRohMji_Q",
+                "status": 1,
+                "handleRemark": "已修正产品信息",
+                "deleted": 0,
+                "createTime": "2025-12-27 10:26",
+                "updateTime": "2025-12-27 10:26"
+            },
+            {
+                "feedbackId": "FEEDBACK_001",
+                "contentId": "CONTENT_IMG_001",
+                "feedbackType": "CHARACTER",
+                "feedbackDesc": "人物形象不匹配",
+                "userOpenid": "ojr3J5qmbAewPAgYeOJtRohMji_Q",
+                "status": 0,
+                "handleRemark": null,
+                "deleted": 0,
+                "createTime": "2025-12-27 10:26",
+                "updateTime": "2025-12-27 10:26"
+            }
+        ]
+    }
+}

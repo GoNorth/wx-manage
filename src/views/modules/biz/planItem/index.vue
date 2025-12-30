@@ -145,19 +145,23 @@ export default {
             totalPage: 0,
             dataListLoading: false,
             planId: '',
+            storeId: '',
             planHeaderInfo: {},
             planHeaderLoading: false
         }
     },
     activated() {
-        // 从路由参数获取planId
+        // 从路由参数获取planId或storeId
         this.planId = this.$route.query.planId || ''
-        if (!this.planId) {
-            this.$message.error('缺少计划ID参数')
+        this.storeId = this.$route.query.storeId || ''
+        if (!this.planId && !this.storeId) {
+            this.$message.error('缺少计划ID或店铺ID参数')
             this.$router.go(-1)
             return
         }
-        this.getPlanHeaderInfo()
+        if (this.planId) {
+            this.getPlanHeaderInfo()
+        }
         this.getDataList()
     },
     methods: {
@@ -211,22 +215,29 @@ export default {
         },
         // 获取数据列表
         getDataList() {
-            if (!this.planId) {
+            if (!this.planId && !this.storeId) {
                 return
             }
             this.dataListLoading = true
             const wxOpenid = this.$cookie.get('wx_openid') || ''
+            const params = {
+                'page': this.pageIndex,
+                'limit': this.pageSize,
+                'productName': this.dataForm.productName,
+                'platform': this.dataForm.platform,
+                'status': this.dataForm.status
+            }
+            // 如果提供了planId，使用planId；如果提供了storeId，使用storeId
+            if (this.planId) {
+                params.planId = this.planId
+            }
+            if (this.storeId) {
+                params.storeId = this.storeId
+            }
             this.$http({
                 url: this.$http.adornUrl('/manage/bizPlanItem/list'),
                 method: 'get',
-                params: this.$http.adornParams({
-                    'page': this.pageIndex,
-                    'limit': this.pageSize,
-                    'planId': this.planId,
-                    'productName': this.dataForm.productName,
-                    'platform': this.dataForm.platform,
-                    'status': this.dataForm.status
-                }),
+                params: this.$http.adornParams(params),
                 headers: {
                     'wx_openid': wxOpenid
                 }
