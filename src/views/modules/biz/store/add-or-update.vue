@@ -1,8 +1,9 @@
 <template>
-    <el-dialog :title="!dataForm.storeId ? '新增' : '修改'" :close-on-click-modal="false" :visible.sync="visible" width="50%">
+    <el-dialog :title="!dataForm.storeId ? '新增' : '修改'" :close-on-click-modal="false" :visible.sync="visible" width="50%" custom-class="store-dialog" top="10vh">
         <el-tabs v-model="activeTab" type="card">
             <!-- 基础信息 -->
             <el-tab-pane label="基础信息" name="basic">
+                <!-- 基本信息区域：跟随基础信息和人物形象标签页变动 -->
                 <el-form :model="dataForm" :rules="dataRule" ref="dataForm" label-width="120px" style="margin-top: 20px;">
                     <el-row :gutter="20">
                         <el-col :span="12">
@@ -60,16 +61,6 @@
                             <el-option label="游客" value="TOURIST"></el-option>
                             <el-option label="其他" value="OTHER"></el-option>
                         </el-select>
-                    </el-form-item>
-                    <el-form-item label="审核状态" prop="auditStatus" v-if="dataForm.storeId">
-                        <el-radio-group v-model="dataForm.auditStatus">
-                            <el-radio :label="0">待审核</el-radio>
-                            <el-radio :label="1">已通过</el-radio>
-                            <el-radio :label="2">已拒绝</el-radio>
-                        </el-radio-group>
-                    </el-form-item>
-                    <el-form-item label="审核备注" prop="auditRemark" v-if="dataForm.storeId">
-                        <el-input v-model="dataForm.auditRemark" placeholder="审核备注" type="textarea" :rows="3"></el-input>
                     </el-form-item>
                 </el-form>
             </el-tab-pane>
@@ -138,6 +129,23 @@
                 </el-form>
             </el-tab-pane>
         </el-tabs>
+        
+        <!-- 审批区域：不跟随标签页变动，仅在修改模式下显示 -->
+        <div v-if="dataForm.storeId" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #e4e7ed;">
+            <el-form :model="dataForm" ref="auditForm" label-width="120px">
+                <el-form-item label="审核状态" prop="auditStatus">
+                    <el-radio-group v-model="dataForm.auditStatus">
+                        <el-radio :label="0">待审核</el-radio>
+                        <el-radio :label="1">已通过</el-radio>
+                        <el-radio :label="2">已拒绝</el-radio>
+                    </el-radio-group>
+                </el-form-item>
+                <el-form-item label="审核备注" prop="auditRemark">
+                    <el-input v-model="dataForm.auditRemark" placeholder="审核备注" type="textarea" :rows="3"></el-input>
+                </el-form-item>
+            </el-form>
+        </div>
+        
         <span slot="footer" class="dialog-footer">
             <el-button @click="visible = false">取消</el-button>
             <el-button type="primary" @click="dataFormSubmit()">确定</el-button>
@@ -338,6 +346,23 @@ export default {
     font-size: 12px;
     color: #909399;
     margin-top: 5px;
+}
+</style>
+
+<style lang="scss">
+// 对话框垂直居中样式
+.store-dialog {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.store-dialog .el-dialog__body {
+    overflow: auto;
+    max-height: calc(100vh - 200px);
 }
 </style>
 
